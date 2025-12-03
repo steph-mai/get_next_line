@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/01 16:28:12 by stmaire           #+#    #+#             */
-/*   Updated: 2025/12/02 17:58:14 by stmaire          ###   ########.fr       */
+/*   Updated: 2025/12/03 10:06:38 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,105 +16,81 @@ size_t	ft_strlen(const char *s)
 {	
 	size_t	i;
 
-	if(!s)
-		return (-1);
 	i = 0;
 	while (s[i])
 		i++;
 	return (i);
 }
-
-int	ft_is_backslash_n(char *s)
+void *ft_memcpy(void *dest, const void *src, size_t n)
 {
-	int	i;
-	
-	i = 0;
-	if (!s)
-		return (-1);
-	while (s[i])
+	size_t	i;
+	unsigned char	*s1;
+	unsigned char	*s2;
+
+	s1 = (unsigned char *)src;
+	s2 = (unsigned char *)dest;
+
+	i = 0;	
+	//ajouter securites chaines nulles?
+	if (dest == src)
+		return (dest);
+	while (i < n)
 	{
-		if (s[i] == '\n')
-			return (i);
+		s2[i] = s1[i];
+		i++;		
+	}
+	return (s2);
+}
+
+char *ft_strdup(const char *s)
+{
+	size_t	len;
+	size_t	i;
+	char	*str;
+	
+	len = ft_strlen(s);
+	str = malloc(sizeof(char) * (len + 1));
+	if (!str)
+		return (NULL);
+	i = 0;
+	while (i < len)
+	{
+		str[i] = s[i];
 		i++;
 	}
-	return (-1);
+	str[i] = '\0';
+	return (str);
 }
-static char	ft_extract_line(char *reserve)
+
+char *ft_strcpy(char *dest, const char *src)
 {
-	int		i;
-	size_t	len;
-	char	*line;
-		
-	if (!reserve)
-		return (NULL);
-	i = ft_is_backslash_n(reserve);
-	if (i == -1)
+	size_t	i;
+
+	i = 0;
+	while (src[i])
 	{
-		len = ft_strlen(reserve);
-		line = malloc(sizeof(char) * len + 1);
-		ft_memcpy(line, reserve, len);
-	}		
-	else
-	{
-		len = i;
-		line = malloc(sizeof(char) * len + 1);
-		ft_memcpy(line, reserve, len);
+		dest[i] = src[i];
+		i++;
 	}
-	line[len] = '\0';
-	return (line);
+	dest[i] = '\0';
+	return (dest);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-static char *extract_line(char *rest)
+char *ft_strcat(char *dest, const char *src)
 {
-    int   i;
-    char *line;
-
-    if (!rest || rest[0] == '\0')
-        return (NULL);
-    i = find_newline(rest);
-    if (i == -1)
-        i = strlen(rest);
-    else
-        i += 1;
-    line = malloc(i + 1);
-    if (!line)
-        return (NULL);
-    memcpy(line, rest, i);
-    line[i] = '\0';
-    return (line);
-}
-
-static char *update_rest(char *rest)
-{
-    int   nl;
-    char *new_rest;
-
-    nl = find_newline(rest);
-    if (nl == -1)
-    {
-        free(rest);
-        return (NULL);
-    }
-    new_rest = strdup(rest + nl + 1);
-    free(rest);
-    return (new_rest);
+	size_t	i;
+	size_t	j;
+	
+	i = 0;
+	j = 0;
+	//a proteger plus?
+	while (dest[i])
+		i++;
+	while (src[j])
+	{
+		dest[i] = src[j];
+		i++;
+		j++;
+	}
+	dest[i] = '\0';
+	return (dest);
 }
