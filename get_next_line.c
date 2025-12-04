@@ -5,22 +5,20 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/02 16:11:06 by stmaire           #+#    #+#             */
-/*   Updated: 2025/12/03 17:42:32 by stmaire          ###   ########.fr       */
+/*   Created: 2025/12/04 15:00:37 by stmaire           #+#    #+#             */
+/*   Updated: 2025/12/04 17:17:18 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h" 
-
-static int  prev_fd = -1;
+#include "get_next_line.h"
 
 static int	ft_is_backslash_n(char *s)
 {
 	int	i;
 	
-	i = 0;
 	if (!s)
 		return (-1);
+	i = 0;
 	while (s[i])
 	{
 		if (s[i] == '\n')
@@ -31,104 +29,92 @@ static int	ft_is_backslash_n(char *s)
 }
 
 static char	*ft_extract_line(char *reserve)
-{
+{	
 	int		i;
 	size_t	len;
 	char	*line;
-		
+
+	if (!reserve)
+		return (NULL);
 	i = ft_is_backslash_n(reserve);
-	if (i == -1)
+    if (i == -1)
 		len = ft_strlen(reserve);
 	else
-		len = i + 1;	
-	line = malloc(sizeof(char) * len + 1);
+		len = i + 1;
+	line = malloc(len + 1);
 	if (!line)
 		return (NULL);
 	ft_memcpy(line, reserve, len);
-	line[len] = '\0';
+    line[len] = '\0';
 	return (line);
 }
+
 static char *ft_update_reserve(char *reserve)
 {
-	int	i;
-	char *new_reserve;
+	int		i;
+	char	*new_reserve;
 	
+	if (!reserve)
+		return (NULL);
 	i = ft_is_backslash_n(reserve);
-	if (i == -1)
+    if (i == -1)
 	{
 		free(reserve);
 		return (NULL);
 	}
-	else
-	{
-		new_reserve = ft_strdup(reserve + i + 1);
-		free(reserve);
-		if (new_reserve[0] == '\0')
-		{
-			free(new_reserve);
-			return(NULL);	
-		}
-		return (new_reserve);
-	}
+	new_reserve = ft_strdup(reserve + i + 1);
+	free(reserve);
+	return (new_reserve);
 }
-char *get_next_line(int fd)
-{
-    static char *reserve;
-    char        *buffer;
-    size_t     	buf_size;
-    char        *temp;
-    char        *line;
-	
+char	*ft_read_and_handle_reserve(int fd, char *reserve, char *buffer)
+{	
+	char	*temp;
+	int		buf_size = 1;
 
-	buf_size = 1;
+    while (ft_is_backslash_n(reserve) == -1 && buf_size > 0)
+    {
+        buf_size = read(fd, buffer, BUFFER_SIZE);
+        if (buf_size < 0)
+            return (NULL); 
+        if (buf_size == 0)
+            break;
+        buffer[buf_size] = '\0';
+        if (!reserve)
+            reserve = ft_strdup(buffer);
+        else
+        {
+            temp = ft_strjoin(reserve, buffer);
+            if (!temp)
+                return (NULL); 
+            free(reserve);
+            reserve = temp;
+        }
+    }
+    return (reserve);
+}
+
+char	*get_next_line(int fd)
+{
+	static char *reserve = NULL;
+	char		*buffer;
+    char		*line;
+	char		*new_reserve;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
-	{
-		reserve = NULL;
-    	return (NULL);
-	}
-	if (fd != prev_fd)
-	{
-    	reserve = NULL;
-    	prev_fd = fd;
-	}
-	buffer = malloc(sizeof(char) * BUFFER_SIZE + 1);
+		return (NULL);
+	buffer = malloc(BUFFER_SIZE + 1);
 	if (!buffer)
-    	return (NULL);
-	while (ft_is_backslash_n(reserve) == -1 && buf_size > 0)
-	{
-		buf_size = read(fd, buffer, BUFFER_SIZE);
-		if (buf_size <= 0)
-			break;
-		buffer[buf_size] = '\0';
-		if (!reserve)
-			reserve = ft_strdup(buffer);
-		else
-		{
-			temp = malloc(ft_strlen(reserve) + ft_strlen(buffer) + 1);
-			//premiere version = (ft_strlen(reserve) + buf_size + 1));
-			//2eme 
-			//temp = malloc(sizeof(char) * ft_strlen(reserve) + ft_strlen(buffer) + 1);
-			if (!temp)
-			{
-				free(buffer);
-				return (NULL);
-			}
-			ft_strcpy(temp, reserve);
-			ft_strcat(temp, buffer);
-			free(reserve);
-			reserve = temp;
-		}
-	}
-	if (!reserve)
-	{
-    	free(buffer);
-    	return (NULL);
-	}
-	line = ft_extract_line(reserve);
-	reserve = ft_update_reserve(reserve);
+		return (NULL);
+	new_reserve = ft_read_and_handle_reserve(fd, reserve, buffer);
 	free(buffer);
-	return(line);
+	if (new_reserve == NULL)  
+		reserve = ft_free_reserve(reserve);
+	reserve = new_reserve;
+	if (!reserve || reserve[0] == '\0')
+		reserve = ft_free_reserve(reserve);
+	line = ft_extract_line(reserve);
+    reserve = ft_update_reserve(reserve);
+	return (line);
 }
 // #include <stdio.h>
 
@@ -144,4 +130,3 @@ char *get_next_line(int fd)
 //     }
 //     close(fd);
 // }
-
