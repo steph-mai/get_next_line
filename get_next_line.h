@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/01 13:54:26 by stmaire           #+#    #+#             */
-/*   Updated: 2025/12/03 10:28:51 by stmaire          ###   ########.fr       */
+/*   Updated: 2025/12/04 17:14:29 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,14 @@
 char		*get_next_line(int fd);
 
 size_t 		ft_strlen(const char *s);
-void		*ft_memcpy(void *dest, const void *src, size_t n);
-char		*ft_strcpy(char *dest, const char *src);
-char		*ft_strcat(char *dest, const char *src);
 char		*ft_strdup(const char *s);
+void 		*ft_memcpy(void *dest, const void *src, size_t n);
+char 		*ft_strjoin(const char *s1, const char *s2);
+char 		*ft_read_and_handle_reserve(int fd, char *reserve, char *buffer);
+char		*ft_free_reserve(char *reserve);
 
 #ifndef BUFFER_SIZE
-# define BUFFER_SIZE 20
+# define BUFFER_SIZE 100
 #endif
 
 #endif
