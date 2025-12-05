@@ -6,17 +6,17 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/01 16:28:12 by stmaire           #+#    #+#             */
-/*   Updated: 2025/12/05 11:08:07 by stmaire          ###   ########.fr       */
+/*   Updated: 2025/12/05 11:53:18 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char *ft_free_and_null(char *s)
+char	*ft_free_and_null(char *s)
 {
 	if (s)
 		free(s);
-	return(NULL);
+	return (NULL);
 }
 
 size_t	ft_strlen(char *s)
@@ -50,7 +50,7 @@ char	*ft_strchr(char *s, int c)
 char	*ft_join_and_free(char *reserve, char *buffer)
 {
 	char	*new_str;
-	
+
 	if (!reserve)
 	{
 		reserve = malloc(1);
@@ -63,10 +63,11 @@ char	*ft_join_and_free(char *reserve, char *buffer)
 	new_str = malloc(ft_strlen(reserve) + ft_strlen(buffer) + 1);
 	if (!new_str)
 		return (ft_free_and_null(reserve));
-	ft_strcat(new_str, reserve, buffer);	
+	ft_strcat(new_str, reserve, buffer);
 	free(reserve);
 	return (new_str);
 }
+
 void	ft_strcat(char *s, char *dest, char *src)
 {
 	int		i;
@@ -75,7 +76,7 @@ void	ft_strcat(char *s, char *dest, char *src)
 	i = 0;
 	j = 0;
 	while (dest[i])
-	{ 
+	{
 		s[i] = dest[i];
 		i++;
 	}

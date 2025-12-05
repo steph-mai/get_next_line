@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/04 15:00:37 by stmaire           #+#    #+#             */
-/*   Updated: 2025/12/05 10:31:49 by stmaire          ###   ########.fr       */
+/*   Updated: 2025/12/05 11:33:14 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static char	*ft_read_file(int fd, char *reserve)
 
 	buffer = malloc((size_t)BUFFER_SIZE + 1);
 	if (!buffer)
-		return (ft_free_and_null(reserve)); 
+		return (ft_free_and_null(reserve));
 	read_bytes = 1;
 	while (!ft_strchr(reserve, '\n') && read_bytes > 0)
 	{
@@ -33,7 +33,7 @@ static char	*ft_read_file(int fd, char *reserve)
 			break ;
 		buffer[read_bytes] = '\0';
 		reserve = ft_join_and_free(reserve, buffer);
-		if (!reserve) // Echec malloc dans le join
+		if (!reserve)
 			return (ft_free_and_null(buffer));
 	}
 	free(buffer);
@@ -84,7 +84,7 @@ static char	*ft_clean_reserve(char *reserve)
 	new_reserve = malloc(ft_strlen(reserve) - i + 1);
 	if (!new_reserve)
 	{
-		free(reserve); 
+		free(reserve);
 		return (NULL);
 	}
 	i++;
@@ -95,6 +95,7 @@ static char	*ft_clean_reserve(char *reserve)
 	free(reserve);
 	return (new_reserve);
 }
+
 char	*get_next_line(int fd)
 {
 	static char	*reserve;
