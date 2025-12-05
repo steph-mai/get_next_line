@@ -6,7 +6,7 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/04 15:00:37 by stmaire           #+#    #+#             */
-/*   Updated: 2025/12/05 11:33:14 by stmaire          ###   ########.fr       */
+/*   Updated: 2025/12/05 13:41:53 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,3 +116,20 @@ char	*get_next_line(int fd)
 	reserve = ft_clean_reserve(reserve);
 	return (line);
 }
+// #include <stdio.h>
+
+// int	main(int argc, char **argv)
+// {
+// 	int		fd;
+// 	char	*line;
+
+// 	if(argc != 2)
+// 		return(-1);
+// 	fd = open(argv[1], O_RDONLY);
+// 	while((line = get_next_line(fd)))
+// 	{
+// 		printf("%s", line);
+// 		free(line);
+// 	}
+// 	close(fd);
+// }
