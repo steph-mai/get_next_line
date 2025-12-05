@@ -6,129 +6,112 @@
 /*   By: stmaire <stmaire@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/04 15:00:37 by stmaire           #+#    #+#             */
-/*   Updated: 2025/12/04 18:03:54 by stmaire          ###   ########.fr       */
+/*   Updated: 2025/12/05 10:31:49 by stmaire          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static int	ft_is_backslash_n(char *s)
+static char	*ft_read_file(int fd, char *reserve)
 {
-	int	i;
+	char	*buffer;
+	int		read_bytes;
 
-	if (!s)
-		return (-1);
-	i = 0;
-	while (s[i])
+	buffer = malloc((size_t)BUFFER_SIZE + 1);
+	if (!buffer)
+		return (ft_free_and_null(reserve)); 
+	read_bytes = 1;
+	while (!ft_strchr(reserve, '\n') && read_bytes > 0)
 	{
-		if (s[i] == '\n')
-			return (i);
-		i++;
+		read_bytes = read(fd, buffer, BUFFER_SIZE);
+		if (read_bytes == -1)
+		{
+			free(buffer);
+			return (ft_free_and_null(reserve));
+		}
+		if (read_bytes == 0)
+			break ;
+		buffer[read_bytes] = '\0';
+		reserve = ft_join_and_free(reserve, buffer);
+		if (!reserve) // Echec malloc dans le join
+			return (ft_free_and_null(buffer));
 	}
-	return (-1);
+	free(buffer);
+	return (reserve);
 }
 
-static char	*ft_extract_line(char *reserve)
+static char	*ft_get_line(char *reserve)
 {
 	int		i;
-	size_t	len;
 	char	*line;
 
-	if (!reserve)
+	i = 0;
+	if (!reserve || !reserve[0])
 		return (NULL);
-	i = ft_is_backslash_n(reserve);
-	if (i == -1)
-		len = ft_strlen(reserve);
-	else
-		len = i + 1;
-	line = malloc(len + 1);
+	while (reserve[i] && reserve[i] != '\n')
+		i++;
+	if (reserve[i] == '\n')
+		i++;
+	line = malloc(i + 1);
 	if (!line)
 		return (NULL);
-	ft_memcpy(line, reserve, len);
-	line[len] = '\0';
+	i = 0;
+	while (reserve[i] && reserve[i] != '\n')
+	{
+		line[i] = reserve[i];
+		i++;
+	}
+	if (reserve[i] == '\n')
+		line[i++] = '\n';
+	line[i] = '\0';
 	return (line);
 }
 
-static char	*ft_update_reserve(char *reserve)
+static char	*ft_clean_reserve(char *reserve)
 {
 	int		i;
+	int		j;
 	char	*new_reserve;
 
-	if (!reserve)
-		return (NULL);
-	i = ft_is_backslash_n(reserve);
-	if (i == -1)
+	i = 0;
+	while (reserve[i] && reserve[i] != '\n')
+		i++;
+	if (!reserve[i])
 	{
 		free(reserve);
 		return (NULL);
 	}
-	new_reserve = ft_strdup(reserve + i + 1);
+	new_reserve = malloc(ft_strlen(reserve) - i + 1);
+	if (!new_reserve)
+	{
+		free(reserve); 
+		return (NULL);
+	}
+	i++;
+	j = 0;
+	while (reserve[i])
+		new_reserve[j++] = reserve[i++];
+	new_reserve[j] = '\0';
 	free(reserve);
 	return (new_reserve);
 }
-
-char	*ft_read_and_handle_reserve(int fd, char *reserve, char *buffer)
-{
-	char	*temp;
-	int		buf_size;
-
-	buf_size = 1;
-	while (ft_is_backslash_n(reserve) == -1 && buf_size > 0)
-	{
-		buf_size = read(fd, buffer, BUFFER_SIZE);
-		if (buf_size < 0)
-			return (NULL);
-		if (buf_size == 0)
-			break ;
-		buffer[buf_size] = '\0';
-		if (!reserve)
-			reserve = ft_strdup(buffer);
-		else
-		{
-			temp = ft_strjoin(reserve, buffer);
-			if (!temp)
-				return (NULL);
-			free(reserve);
-			reserve = temp;
-		}
-	}
-	return (reserve);
-}
-
 char	*get_next_line(int fd)
 {
-	static char	*reserve = NULL;
-	char		*buffer;
+	static char	*reserve;
 	char		*line;
-	char		*new_reserve;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	buffer = malloc(BUFFER_SIZE + 1);
-	if (!buffer)
+	reserve = ft_read_file(fd, reserve);
+	if (!reserve)
 		return (NULL);
-	new_reserve = ft_read_and_handle_reserve(fd, reserve, buffer);
-	free (buffer);
-	if (new_reserve == NULL)
-		reserve = ft_free_reserve(reserve);
-	reserve = new_reserve;
-	if (!reserve || reserve[0] == '\0')
-		reserve = ft_free_reserve(reserve);
-	line = ft_extract_line(reserve);
-	reserve = ft_update_reserve(reserve);
+	line = ft_get_line(reserve);
+	if (!line)
+	{
+		free(reserve);
+		reserve = NULL;
+		return (NULL);
+	}
+	reserve = ft_clean_reserve(reserve);
 	return (line);
 }
-// #include <stdio.h>
-
-// int main(void)
-// {
-//     int fd = open("test.txt", O_RDONLY);
-//     char *line;
-
-//     while ((line = get_next_line(fd)) != NULL)
-//     {
-//         printf("%s", line);
-//         free(line);
-//     }
-//     close(fd);
-// }
