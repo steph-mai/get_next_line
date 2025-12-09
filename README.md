@@ -1,4 +1,4 @@
-*This project has been created as part of the 42 curriculum by stmaire@student.42.fr* 
+*This project has been created as part of the 42 curriculum by stmaire* 
 
 # Get Next Line
 
@@ -23,8 +23,13 @@ The project compiles with or without this flag (a default value is set in the he
 
 **Compilation command:**
 
+* **Mandatory:**
 ```bash
-cc -Wall -Wextra -Werror -D BUFFER_SIZE=42 <files>.c
+cc -Wall -Wextra -Werror -D BUFFER_SIZE=42 get_next_line.c get_next_line_utils.c
+```
+* **Bonus:**
+```bash
+cc -Wall -Wextra -Werror -D BUFFER_SIZE=42 get_next_line_bonus.c get_next_line_utils_bonus.c
 ```
 
 ## Resources
@@ -47,7 +52,7 @@ The following documentation was used to implement the core concepts of this proj
 
 An AI assistant was consulted for technical support during specific phases of development:
 
-* **Debugging:** Assisted in analyzing segmentation faults and "double free" errors within `ft_join_and_free` functions.
+* **Debugging:** Assisted in analyzing segmentation faults and "double free" errors within `ft_join_and_free` function.
 * **Testing Strategy:** Generated a `main.c` file to verify edge cases and validate the logic for the bonus part.
 * **Documentation:** Assisted in structuring and drafting this README file to ensure clarity.
 
